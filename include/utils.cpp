@@ -3,7 +3,6 @@
 */
 
 #include "./utils.h"
-#include <openssl/sha.h>
 
 void arbitrary_xor(uint8_t *out, uint8_t *in1, uint8_t *in2, int len) {
     for (int i = 0; i < len; i++) {
