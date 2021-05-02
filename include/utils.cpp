@@ -4,14 +4,14 @@
 
 #include "./utils.h"
 
-void arbitrary_xor(uint8_t *out, uint8_t *in1, uint8_t *in2, int len) {
+void arbitrary_xor(uint8_t *out, const uint8_t *in1, const uint8_t *in2, const int len) {
     for (int i = 0; i < len; i++) {
         *(out + i) = *(in1 + i) ^ *(in2 + i);
     }
 }
 
 
-void KDF(uint8_t *out, int outlen, uint8_t *in, int inlen) {
+void KDF(uint8_t *out, int outlen, const uint8_t *in, const int inlen) {
     /* a KDF based on sha-256 */
 
     int index = 0; // locate block position

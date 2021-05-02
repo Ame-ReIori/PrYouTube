@@ -7,8 +7,8 @@
 #include <cstring>
 #include <openssl/sha.h>
 
-void arbitrary_xor(uint8_t *out, uint8_t *in1, uint8_t *in2, int len);
+void arbitrary_xor(uint8_t *out, const uint8_t *in1, const uint8_t *in2, const int len);
 
-void KDF(uint8_t *out, int outlen, uint8_t *in, int inlen);
+void KDF(uint8_t *out, int outlen, const uint8_t *in, const int inlen);
 
 #endif
