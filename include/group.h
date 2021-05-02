@@ -66,6 +66,7 @@ class Group {
         Group();
         ~Group();
 
+        void get_rand_bn(BigInteger &n);
         void get_rand_point(Point &p);
         Point get_generator();
         Point mul_gen(const BigInteger &num);
