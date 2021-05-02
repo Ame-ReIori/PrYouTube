@@ -1,7 +1,4 @@
 #include "./group.h"
-#include <emp-tool/utils/utils.h>
-#include <openssl/bn.h>
-#include <openssl/ec.h>
 
 BigInteger::BigInteger() {
     n = BN_new();
