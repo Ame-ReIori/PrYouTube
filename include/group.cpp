@@ -1,7 +1,7 @@
 #include "./group.h"
 #include <emp-tool/utils/utils.h>
+#include <openssl/bn.h>
 #include <openssl/ec.h>
-
 
 BigInteger::BigInteger() {
     n = BN_new();
@@ -137,5 +137,40 @@ Point Point::inv() {
     Point res(*this);
     if (!EC_POINT_invert(group->ec_group, res.point, group->ctx))
         emp::error("POINT INV ERR");
+    return res;
+}
+
+Group::Group() {
+    ec_group = EC_GROUP_new_by_curve_name(NID_secp160r1);
+    ctx = BN_CTX_new();
+    EC_GROUP_precompute_mult(ec_group, ctx); // for faster multiplication
+    EC_GROUP_get_order(ec_group, order.n, ctx);
+}
+
+Group::~Group() {
+    if (ec_group != nullptr) EC_GROUP_free(ec_group);
+    if (ctx != nullptr) BN_CTX_free(ctx);
+}
+
+void Group::get_rand_bn(BigInteger &n) {
+    BN_rand_range(n.n, order.n);
+}
+
+void Group::get_rand_point(Point &p) {
+    BigInteger sk; // as sk, and it cannot be leaked
+    get_rand_bn(sk);
+
+    p = mul_gen(sk);
+}
+
+Point Group::get_generator() {
+    Point res(this);
+    if (!EC_POINT_copy(res.point, EC_GROUP_get0_generator(ec_group))) emp::error("GEN ERR");
+    return res;
+}
+
+Point Group::mul_gen(const BigInteger &num) {
+    Point res(this);
+    if (!EC_POINT_mul(ec_group, res.point, num.n, NULL, NULL, ctx)) emp::error("MUL_GEN ERR");
     return res;
 }
