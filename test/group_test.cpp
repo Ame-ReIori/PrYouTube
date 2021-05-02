@@ -1,7 +1,5 @@
 #include "../include/group.h"
 #include "./test.h"
-#include <openssl/bn.h>
-#include <openssl/ec.h>
 
 void BN_test() {
     int len = 256;
@@ -80,12 +78,17 @@ void Point_Group_test() {
     Group G;
     Point pk, g;
 
+    uint8_t encoded_point[SECP160R1_OCT_UNCOMPRESSED_LENGTH];
+    Point decode_point;
+
     BigInteger tmp_sk;
     Point tmp_pk;
 
-    BIGNUM *x, *y;
+    BIGNUM *x, *y, *decoded_x, *decoded_y;
     x = BN_new();
     y = BN_new();
+    decoded_x = BN_new();
+    decoded_y = BN_new();
 
     int batch = 1000;
 
@@ -93,7 +96,7 @@ void Point_Group_test() {
     std::cout << "==================== RANDOM POINT ACCURACY TEST ====================" << std::endl;
 
     G.get_rand_point(pk);
-    EC_POINT_get_affine_coordinates_GFp(G.ec_group, pk.point, x, y, G.ctx);
+    EC_POINT_get_affine_coordinates_GFp(pk.group->ec_group, pk.point, x, y, pk.group->ctx);
 
     BN_print_fp(stdout, x);
     std::cout << std::endl;
@@ -101,6 +104,19 @@ void Point_Group_test() {
     std::cout << std::endl;
 
     printf("Is the point on curve?  %d\n", EC_POINT_is_on_curve(G.ec_group, pk.point, G.ctx));
+
+    std::cout << "==================== ENCODING ACCURACY TEST ====================" << std::endl;
+
+    printf("Encoding of the point above:\n");
+    pk.to_oct(encoded_point, 41);
+    decode_point.from_oct(&G, encoded_point, 41);
+    EC_POINT_get_affine_coordinates_GFp(decode_point.group->ec_group, 
+        decode_point.point, decoded_x, decoded_y, decode_point.group->ctx);
+    BN_print_fp(stdout, decoded_x);
+    std::cout << std::endl;
+    BN_print_fp(stdout, decoded_y);
+    std::cout << std::endl;
+
 
     std::cout << "==================== PRESSION TEST ====================" << std::endl;
     for (int i = 0; i < batch; i++) {
@@ -111,6 +127,11 @@ void Point_Group_test() {
         g = G.get_generator();
     }
     std::cout << "PASS" << std::endl;
+
+    BN_free(x);
+    BN_free(y);
+    BN_free(decoded_x);
+    BN_free(decoded_y);
 }
 
 int main() {
