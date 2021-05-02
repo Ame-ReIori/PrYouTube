@@ -72,6 +72,6 @@ class Group {
         Point mul_gen(const BigInteger &num);
 };
 
-
+#define SECP160R1_OCT_UNCOMPRESSED_LENGTH 41
 
 #endif
