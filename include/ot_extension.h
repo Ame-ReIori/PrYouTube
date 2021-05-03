@@ -3,19 +3,21 @@
 
 #include "./ot.h"
 
-class OTEX {
+/* a spectial ot extension, exec 64 ot */
+
+class OTEX64 {
     public:
         emp::NetIO *io;
         Group *G = nullptr;
         OT *base_ot = nullptr;
 
-        OTEX(emp::NetIO *io);
-        ~OTEX();
+        OTEX64(emp::NetIO *io);
+        ~OTEX64();
 
         void send(const uint8_t **data0, const uint8_t **data1, 
-                    const int mlen, const int batch, const int execlen);
+                    const int mlen, const int batch);
 
-        void recv(uint8_t **r, const bool *b, const int mlen, const int batch, const int execlen);
+        void recv(uint8_t **r, const bool *b, const int mlen, const int batch);
 };
 
 
