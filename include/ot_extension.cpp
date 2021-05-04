@@ -1,5 +1,4 @@
 #include "./ot_extension.h"
-#include <bits/stdint-uintn.h>
 
 OTEX64::OTEX64(emp::NetIO *io) {
     this->io = io;
