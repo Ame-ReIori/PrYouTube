@@ -43,7 +43,7 @@ void OTEX64::send(const uint64_t *data0, const uint64_t *data1, const int batch)
     #endif
 
     // transform Qt to Q
-    uint64_t Q[batch];
+    uint64_t *Q = new uint64_t[batch];
     trans_mat_64_batch(Q, Qt, batch);
 
     #ifdef Q_TRANS_TEST
@@ -60,14 +60,15 @@ void OTEX64::send(const uint64_t *data0, const uint64_t *data1, const int batch)
         io->send_data((uint8_t *)&x1, 8);
     }
 
+    delete[] Q;
     delete[] Qt;
 
 }   
 
 void OTEX64::recv(uint64_t *r, const bool *b, const int batch) {
     // prepare T and U, T_i xor U_i = b_i \cdot 1^k
-    uint64_t T[batch];
-    uint64_t U[batch];
+    uint64_t *T = new uint64_t[batch];
+    uint64_t *U = new uint64_t[batch];
     initial_TU(T, U, b, batch);
 
     // transform T and U
@@ -139,6 +140,8 @@ void OTEX64::recv(uint64_t *r, const bool *b, const int batch) {
         }
     }
 
+    delete[] T;
+    delete[] U;
     delete[] Tt;
     delete[] Ut;
 }

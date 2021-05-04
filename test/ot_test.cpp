@@ -36,12 +36,13 @@ void base_ot_test(emp::NetIO *io, int party) {
 
 void ot_extension_test(emp::NetIO *io, int party) {
     OTEX64 *otex = new OTEX64(io);
-    int batch = 1024 * 128;
+    int batch = 1024 * 1024;
     emp::PRG prg(emp::fix_key);
 
-    uint64_t data0[batch], data1[batch];
-    uint64_t r[batch];
-    bool b[batch];
+    uint64_t *data0 = new uint64_t[batch];
+    uint64_t *data1 = new uint64_t[batch];
+    uint64_t *r = new uint64_t[batch];
+    bool *b = new bool[batch];
 
     prg.random_data((uint8_t *)data0, batch * 8);
     prg.random_data((uint8_t *)data1, batch * 8);
@@ -65,6 +66,11 @@ void ot_extension_test(emp::NetIO *io, int party) {
 
     printf("PASS\n");
     printf("exec %d ot in %f ms.\n", batch, e / 1000);
+
+    delete[] data0;
+    delete[] data1;
+    delete[] r;
+    delete[] b;
 }
 
 int main(int argc, char **argv) {
