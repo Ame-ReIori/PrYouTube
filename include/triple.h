@@ -13,8 +13,8 @@ class Triple {
         Triple(emp::NetIO *io);
         ~Triple();
 
-        void gen_batch(uint64_t *a, uint64_t *b, uint64_t *c, int batch, int party);
-        void gen_matrix(uint64_t *a, uint64_t *b, uint64_t *c, int batch, int party);
+        void gen_batch(uint64_t *a, uint64_t *b, uint64_t *c, int batch, int party, int is_precomputed);
+        void gen_matrix(Matrix64u &a, Matrix64u &b, Matrix64u &c, int m, int d, int n, int party);
 };
 
 void uint64s_to_bools(bool *out, const uint64_t *in, const int len);

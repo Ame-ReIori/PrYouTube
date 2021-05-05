@@ -1,4 +1,5 @@
 #include "./triple.h"
+#include "./utils.h"
 
 Triple::Triple(emp::NetIO *io) {
     this->io = io;
@@ -11,10 +12,13 @@ Triple::~Triple() {
     }
 }
 
-void Triple::gen_batch(uint64_t *a, uint64_t *b, uint64_t *c, int batch, int party) {
+void Triple::gen_batch(uint64_t *a, uint64_t *b, uint64_t *c, int batch, int party, int is_precomputed) {
+
     // randomly choose ai and bi
-    prg.random_data((uint8_t *)a, 8 * batch);
-    prg.random_data((uint8_t *)b, 8 * batch);
+    if (!is_precomputed) {
+        prg.random_data((uint8_t *)a, 8 * batch);
+        prg.random_data((uint8_t *)b, 8 * batch);
+    }
 
     int total_ot_batch = batch * sizeof(*a) * 8; // for one triple, 64 base ot should be executed
 
@@ -96,6 +100,56 @@ void Triple::gen_batch(uint64_t *a, uint64_t *b, uint64_t *c, int batch, int par
     delete[] r;
     delete[] u;
     delete[] v;
+}
+
+void Triple::gen_matrix(Matrix64u &a, Matrix64u &b, Matrix64u &c, int m, int d, int n, int party) {
+    // a is m * d
+    // b is d * n
+    // c is m * n and c = ab
+    a.resize(m, d);
+    b.resize(d, n);
+    c.resize(m, n);
+    c.setZero();
+
+    random_matrix(a);
+    random_matrix(b);
+
+    // transpose a to get rows
+    a.transposeInPlace();
+
+    
+    // ain and bin is used to exec batch triple generation, result in cou
+    uint64_t *ain = new uint64_t[m * d * n];
+    uint64_t *bin = new uint64_t[m * d * n];
+    uint64_t *cou = new uint64_t[m * d * n];
+    uint64_t *res = new uint64_t[m * n];
+
+    for (int i = 0; i < n; i++) {
+        std::copy(a.data(), a.data() + a.size(), ain + i * a.size());
+        for (int j = 0; j < m; j++) {
+            std::copy(b.col(i).data(), b.col(i).data() + d, bin + i * d * m + j * d);
+        }
+    }
+    
+    gen_batch(ain, bin, cou, m * d * n, party, true);
+    std::cout << "1" << std::endl;
+
+    for (int i = 0; i < m * n; i++) {
+        uint64_t tmp = 0;
+        for (int j = 0; j < d; j++) {
+            tmp += cou[i * d + j];
+        }
+        res[i] = tmp;
+    }
+    
+    std::copy(res, res + m * n, c.data());
+
+    a.transposeInPlace();
+
+    delete[] ain;
+    delete[] bin;
+    delete[] cou;
+    delete[] res;
 }
 
 void uint64s_to_bools(bool *out, const uint64_t *in, const int len) {

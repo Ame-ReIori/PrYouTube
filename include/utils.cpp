@@ -3,6 +3,8 @@
 */
 
 #include "./utils.h"
+#include "./common.h"
+
 
 void arbitrary_xor(uint8_t *out, const uint8_t *in1, const uint8_t *in2, const int len) {
     for (int i = 0; i < len; i++) {
@@ -37,4 +39,14 @@ void KDF(uint8_t *out, int outlen, const uint8_t *in, const int inlen) {
         SHA256(msg, inlen + 4, digest);
         memcpy(out + index, digest, outlen - index);
     }
+}
+
+void random_matrix(Matrix64u &m) {
+    uint64_t *tmp = new uint64_t[m.size()];
+    emp::PRG prg;
+
+    prg.random_data(tmp, m.size() * 8);
+    std::copy(tmp, tmp + m.size(), m.data());
+    
+    delete[] tmp;
 }
