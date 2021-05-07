@@ -132,7 +132,6 @@ void Triple::gen_matrix(Matrix64u &a, Matrix64u &b, Matrix64u &c, int m, int d, 
     }
     
     gen_batch(ain, bin, cou, m * d * n, party, true);
-    std::cout << "1" << std::endl;
 
     for (int i = 0; i < m * n; i++) {
         uint64_t tmp = 0;
