@@ -111,8 +111,8 @@ void Triple::gen_matrix(Matrix64u &a, Matrix64u &b, Matrix64u &c, int m, int d, 
     c.resize(m, n);
     c.setZero();
 
-    random_matrix(a);
-    random_matrix(b);
+    random_matrix64u(a);
+    random_matrix64u(b);
 
     // transpose a to get rows
     a.transposeInPlace();

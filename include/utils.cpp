@@ -41,11 +41,21 @@ void KDF(uint8_t *out, int outlen, const uint8_t *in, const int inlen) {
     }
 }
 
-void random_matrix(Matrix64u &m) {
+void random_matrix64u(Matrix64u &m) {
     uint64_t *tmp = new uint64_t[m.size()];
     emp::PRG prg;
 
     prg.random_data(tmp, m.size() * 8);
+    std::copy(tmp, tmp + m.size(), m.data());
+    
+    delete[] tmp;
+}
+
+void random_matrix32u(Matrix32u &m) {
+    uint32_t *tmp = new uint32_t[m.size()];
+    emp::PRG prg(emp::fix_key);
+
+    prg.random_data(tmp, m.size() * 4);
     std::copy(tmp, tmp + m.size(), m.data());
     
     delete[] tmp;
