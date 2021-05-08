@@ -53,7 +53,7 @@ void random_matrix64u(Matrix64u &m) {
 
 void random_matrix32u(Matrix32u &m) {
     uint32_t *tmp = new uint32_t[m.size()];
-    emp::PRG prg(emp::fix_key);
+    emp::PRG prg;
 
     prg.random_data(tmp, m.size() * 4);
     std::copy(tmp, tmp + m.size(), m.data());
