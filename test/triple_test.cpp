@@ -24,9 +24,9 @@ void batch_test(emp::NetIO *io, int party) {
 
 void matrix_test(emp::NetIO *io, int party) {
     Triple *triple = new Triple(io);
-    int m = 2;
-    int d = 3;
-    int n = 1;
+    int m = 16;
+    int d = 128;
+    int n = 64;
 
     Matrix64u a, b, c;
     auto s= emp::clock_start();
@@ -34,61 +34,6 @@ void matrix_test(emp::NetIO *io, int party) {
     double end = emp::time_from(s);
     
     printf("generate %dx%d and %dx%d triples in %f ms.\n", m, d, d, n, end / 1000);
-
-    std::cout << a << std::endl << std::endl;
-    std::cout << b << std::endl << std::endl;
-    std::cout << c << std::endl << std::endl;
-
-    Matrix64u va, vb;
-
-    va.resize(m, d);
-    vb.resize(d, n);
-
-    random_matrix64u(va);
-    random_matrix64u(vb);
-
-    std::cout << va << std::endl << std::endl;
-    std::cout << vb << std::endl << std::endl;
-
-    Matrix64u e0 = va - a;
-    Matrix64u f0 = vb - b;
-
-    std::cout << e0 << std::endl << std::endl;
-    std::cout << f0 << std::endl << std::endl;
-
-    Matrix64u e1, f1;
-    e1.resize(m, d);
-    f1.resize(d, n);
-
-    if (party == emp::ALICE) {
-        io->send_data(e0.data(), e0.size() * 8);
-        io->send_data(f0.data(), f0.size() * 8);
-    } else {
-        io->recv_data(e1.data(), e0.size() * 8);
-        io->recv_data(f1.data(), f0.size() * 8);
-    }
-
-    if (party == emp::ALICE) {
-        io->recv_data(e1.data(), e0.size() * 8);
-        io->recv_data(f1.data(), f0.size() * 8);
-    } else {
-        io->send_data(e0.data(), e0.size() * 8);
-        io->send_data(f0.data(), f0.size() * 8);
-    }
-
-    std::cout << e1 << std::endl << std::endl;
-    std::cout << f1 << std::endl << std::endl;
-
-    Matrix64u e = e0 + e1;
-    Matrix64u f = f0 + f1;
-
-    Matrix64u t = (party - 1) * e * f + a * f + e * b + c;
-
-    std::cout << t << std::endl;
-}
-
-inline uint32_t FLOAT2FIX(float a, int scale) {
-    return (uint32_t)(a * (1 << scale));
 }
 
 void fixed_matrix_mul_test(emp::NetIO *io, int party) {
