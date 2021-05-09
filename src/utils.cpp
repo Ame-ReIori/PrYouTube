@@ -60,3 +60,13 @@ void random_matrix32u(Matrix32u &m) {
     
     delete[] tmp;
 }
+
+void random_vector32u(Vector32u &m) {
+    uint32_t *tmp = new uint32_t[m.size()];
+    emp::PRG prg;
+
+    prg.random_data(tmp, m.size() * 4);
+    std::copy(tmp, tmp + m.size(), m.data());
+    
+    delete[] tmp;
+}
