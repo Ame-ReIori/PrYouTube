@@ -4,6 +4,7 @@
 
 #include "../include/utils.h"
 #include "../include/common.h"
+#include <eigen3/Eigen/src/Core/util/Constants.h>
 
 
 void arbitrary_xor(uint8_t *out, const uint8_t *in1, const uint8_t *in2, const int len) {
@@ -69,4 +70,27 @@ void random_vector32u(Vector32u &m) {
     std::copy(tmp, tmp + m.size(), m.data());
     
     delete[] tmp;
+}
+
+inline void set_normal_random(float *arr, int n, float mu, float sigma) {
+    static std::random_device seed_gen;
+    static std::mt19937 prg(seed_gen());
+    std::normal_distribution<float> dis(mu, sigma);
+    for (int i = 0; i < n; i++) {
+        arr[i] = dis(prg);
+    }
+}
+
+void random_normal_matrix32u(Matrix32u &m) {
+    Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic> tmp;
+    tmp.resize(m.rows(), m.cols());
+    set_normal_random(tmp.data(), tmp.size(), 0, 0.01);
+    m = (tmp * SCALE_NUM).cast<uint32_t>();
+}
+
+void random_normal_vector32u(Vector32u &v) {
+    Eigen::Matrix<float, Eigen::Dynamic, 1> tmp;
+    tmp.resize(v.rows());
+    set_normal_random(tmp.data(), tmp.size(), 0, 0.01);
+    v = (tmp * SCALE_NUM).cast<uint32_t>();
 }
