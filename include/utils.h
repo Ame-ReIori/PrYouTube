@@ -19,4 +19,8 @@ void random_matrix32u(Matrix32u &m);
 
 void random_vector32u(Vector32u &v);
 
+void random_normal_matrix32u(Matrix32u &m);
+
+void random_normal_vector32u(Vector32u &v);
+
 #endif
