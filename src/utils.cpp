@@ -5,6 +5,7 @@
 #include "../include/utils.h"
 #include "../include/common.h"
 #include <eigen3/Eigen/src/Core/util/Constants.h>
+#include <random>
 
 
 void arbitrary_xor(uint8_t *out, const uint8_t *in1, const uint8_t *in2, const int len) {
@@ -72,25 +73,29 @@ void random_vector32u(Vector32u &m) {
     delete[] tmp;
 }
 
-inline void set_normal_random(float *arr, int n, float mu, float sigma) {
-    static std::random_device seed_gen;
-    static std::mt19937 prg(seed_gen());
-    std::normal_distribution<float> dis(mu, sigma);
+inline float rand_float() {
+    return -1 + 1.0 * (rand() % RAND_MAX) / RAND_MAX * (2-0);
+}
+
+inline void set_rand_float_array(float *arr, int n) {
+    std::random_device rd{};
+    srand(rd());
     for (int i = 0; i < n; i++) {
-        arr[i] = dis(prg);
+        arr[i] = rand_float();
     }
 }
 
-void random_normal_matrix32u(Matrix32u &m) {
+void random_fixed_matrix32u(Matrix32u &m) {
     Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic> tmp;
     tmp.resize(m.rows(), m.cols());
-    set_normal_random(tmp.data(), tmp.size(), 0, 0.01);
+    set_rand_float_array(tmp.data(), tmp.size());
+    std::cout << tmp << std::endl << std::endl;
     m = (tmp * SCALE_NUM).cast<uint32_t>();
 }
 
-void random_normal_vector32u(Vector32u &v) {
+void random_fixed_vector32u(Vector32u &v) {
     Eigen::Matrix<float, Eigen::Dynamic, 1> tmp;
     tmp.resize(v.rows());
-    set_normal_random(tmp.data(), tmp.size(), 0, 0.01);
+    set_rand_float_array(tmp.data(), tmp.size());
     v = (tmp * SCALE_NUM).cast<uint32_t>();
 }

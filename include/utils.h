@@ -19,8 +19,10 @@ void random_matrix32u(Matrix32u &m);
 
 void random_vector32u(Vector32u &v);
 
-void random_normal_matrix32u(Matrix32u &m);
+// generate float matrix whose values \in (-1, 1)
+// and then convert them into fixed-point number
+void random_fixed_matrix32u(Matrix32u &m);
 
-void random_normal_vector32u(Vector32u &v);
+void random_fixed_vector32u(Vector32u &v);
 
 #endif
