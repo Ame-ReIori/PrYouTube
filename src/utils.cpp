@@ -89,7 +89,6 @@ void random_fixed_matrix32u(Matrix32u &m) {
     Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic> tmp;
     tmp.resize(m.rows(), m.cols());
     set_rand_float_array(tmp.data(), tmp.size());
-    std::cout << tmp << std::endl << std::endl;
     m = (tmp * SCALE_NUM).cast<uint32_t>();
 }
 

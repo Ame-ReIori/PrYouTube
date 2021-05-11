@@ -15,6 +15,8 @@ class Layer {
 
         virtual ~Layer() {}
 
+        virtual void setup() = 0;
+
         virtual void forward(const Matrix32u& bottom) = 0; // forward computation, it is very simple
 
         virtual void backward(const Matrix32u& bottom, const Matrix32u& grad_top) = 0;

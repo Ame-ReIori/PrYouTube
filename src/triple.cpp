@@ -15,10 +15,13 @@ Triple::~Triple() {
 void Triple::gen_batch(uint64_t *a, uint64_t *b, uint64_t *c, int batch, int party, int is_precomputed) {
 
     // randomly choose ai and bi
-    if (!is_precomputed) {
+    if ((is_precomputed & 0b10) == 0) {
         prg.random_data((uint8_t *)a, 8 * batch);
+    } 
+
+    if ((is_precomputed & 0b01) == 0) {
         prg.random_data((uint8_t *)b, 8 * batch);
-    }
+    } 
 
     int total_ot_batch = batch * sizeof(*a) * 8; // for one triple, 64 base ot should be executed
 
@@ -102,17 +105,22 @@ void Triple::gen_batch(uint64_t *a, uint64_t *b, uint64_t *c, int batch, int par
     delete[] v;
 }
 
-void Triple::gen_matrix(Matrix64u &a, Matrix64u &b, Matrix64u &c, int m, int d, int n, int party) {
+void Triple::gen_matrix(Matrix64u &a, Matrix64u &b, Matrix64u &c, int m, int d, int n, int party, int is_precomputed) {
     // a is m * d
     // b is d * n
     // c is m * n and c = ab
-    a.resize(m, d);
-    b.resize(d, n);
+    if ((is_precomputed & 0b10) == 0) {
+        a.resize(m, d);
+        random_matrix64u(a);
+    } 
+
+    if ((is_precomputed & 0b01) == 0) {
+        b.resize(d, n);
+        random_matrix64u(b);
+    } 
+    
     c.resize(m, n);
     c.setZero();
-
-    random_matrix64u(a);
-    random_matrix64u(b);
 
     // transpose a to get rows
     a.transposeInPlace();
@@ -131,7 +139,7 @@ void Triple::gen_matrix(Matrix64u &a, Matrix64u &b, Matrix64u &c, int m, int d, 
         }
     }
     
-    gen_batch(ain, bin, cou, m * d * n, party, true);
+    gen_batch(ain, bin, cou, m * d * n, party, 0b11);
 
     for (int i = 0; i < m * n; i++) {
         uint64_t tmp = 0;
