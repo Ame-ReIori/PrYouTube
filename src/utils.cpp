@@ -98,3 +98,28 @@ void random_fixed_vector32u(Vector32u &v) {
     set_rand_float_array(tmp.data(), tmp.size());
     v = (tmp * SCALE_NUM).cast<uint32_t>();
 }
+
+void get_matrix_hl(Matrix32u &h, Matrix32u &l, const Matrix32u &m) {
+    h.resize(m.rows(), m.cols());
+    l.resize(m.rows(), m.cols());
+
+    for (int i = 0; i < m.rows(); i++) {
+        for (int j = 0; j < m.cols(); j++) {
+            h(i, j) = (m(i, j) & 0xffff0000) >> 16;
+            l(i, j) = m(i, j) & 0xffff;
+        }
+    }
+}
+
+void get_matrix_bit(Matrix32u &b, const Matrix32u &m, const uint32_t num) {
+    // get m's msb
+    // if msb = 0 ==> store as 0xffffffff
+    // if msb = 1 ==> store as 0x00000000
+    b.resize(m.rows(), m.cols());
+
+    for (int i = 0; i < m.rows(); i++) {
+        for (int j = 0; j < m.cols(); j++) {
+            b(i, j) = (m(i, j) >> (num - 1)) & 1;
+        }
+    }
+}

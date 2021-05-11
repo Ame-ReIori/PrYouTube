@@ -25,4 +25,8 @@ void random_fixed_matrix32u(Matrix32u &m);
 
 void random_fixed_vector32u(Vector32u &v);
 
+void get_matrix_hl(Matrix32u &h, Matrix32u &l, const Matrix32u &m);
+
+void get_matrix_bit(Matrix32u &b, const Matrix32u &m, const uint32_t num);
+
 #endif
