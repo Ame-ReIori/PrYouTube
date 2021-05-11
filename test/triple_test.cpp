@@ -10,7 +10,7 @@ void batch_test(emp::NetIO *io, int party) {
 
     std::cout << "==================== BATCH TRIPLE GEN PERFORMANCE TEST ====================" << std::endl;
     auto s = emp::clock_start();
-    triple->gen_batch(a, b, c, batch, party, false);
+    triple->gen_batch(a, b, c, batch, party, 0b00);
     double e = emp::time_from(s);
     
     printf("generate %d triples in %f ms.\n", batch, e / 1000);
@@ -30,7 +30,7 @@ void matrix_test(emp::NetIO *io, int party) {
 
     Matrix64u a, b, c;
     auto s= emp::clock_start();
-    triple->gen_matrix(a, b, c, m, d, n, party);
+    triple->gen_matrix(a, b, c, m, d, n, party, 0b00);
     double end = emp::time_from(s);
     
     printf("generate %dx%d and %dx%d triples in %f ms.\n", m, d, d, n, end / 1000);
@@ -58,8 +58,8 @@ void fixed_matrix_mul_test(emp::NetIO *io, int party) {
           -0.392582, 0.43298052, 0.9234850, -0.209485092,
           0.3294582, 0.24905820, 0.786564, 0.2490582;
 
-    van = (ta * (1 << 18)).cast<uint32_t>();
-    vbn = (tb * (1 << 18)).cast<uint32_t>();
+    van = (ta * SCALE_NUM).cast<uint32_t>();
+    vbn = (tb * SCALE_NUM).cast<uint32_t>();
 
     random_matrix32u(ra);
     random_matrix32u(rb);
@@ -73,7 +73,7 @@ void fixed_matrix_mul_test(emp::NetIO *io, int party) {
     }
 
     Matrix64u va64, vb64, e0, f0, e1, f1, e, f, a, b, c;
-    triple->gen_matrix(a, b, c, m, d, n, party);
+    triple->gen_matrix(a, b, c, m, d, n, party, 0b00);
     
     va64 = va.cast<int32_t>().cast<uint64_t>();
     vb64 = vb.cast<int32_t>().cast<uint64_t>();
@@ -105,7 +105,7 @@ void fixed_matrix_mul_test(emp::NetIO *io, int party) {
     f = f0 + f1;
     
     Matrix64u vc64 = (party - 1) * e * f + a * f + e * b + c;
-    Matrix32u vc = (vc64 / (1 << 18)).cast<uint32_t>();
+    Matrix32u vc = (vc64 / SCALE_NUM).cast<uint32_t>();
 
     std::cout << vc << std::endl << std::endl;
 }
