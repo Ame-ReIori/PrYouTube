@@ -46,7 +46,41 @@ void ReLU::forward(const Matrix32u & bottom) {
     }
 }
 
-void ReLU::backward(const Matrix32u &bottom, const Matrix32u &grad_top) {}
+void ReLU::backward(const Matrix32u &bottom, const Matrix32u &grad_top) {
+    // calculate (bottom > 0) * grad_top
+
+    Matrix32u cn, rn;
+
+    // get msb of bottom
+    get_msb(cn, bottom);
+
+    // initial rn
+    rn.resize(bottom.rows(), bottom.cols());
+    random_matrix32u(rn);
+
+    // initial res
+    grad.resize(bottom.rows(), bottom.cols());
+    
+    uint32_t a, c, r, b;
+    for (int i = 0; i < bottom.rows(); i++) {
+        for (int j = 0; j < bottom.cols(); j++) {
+            if (party == emp::ALICE) {
+                a = grad_top(i, j);
+                c = cn(i, j) + 0xffffffff;
+                r = rn(i, j);
+            } else {
+                b = grad_top(i, j);
+            }
+            uint32_t tmp = exec_circ(a, c, r, b);
+            
+            if (party == emp::ALICE) {
+                grad(i, j) = r;
+            } else {
+                grad(i, j) = tmp;
+            }
+        }
+    }
+}
 
 void ReLU::get_msb(Matrix32u &c, const Matrix32u &bottom) {
     int row_num = bottom.rows();
