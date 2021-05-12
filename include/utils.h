@@ -29,4 +29,6 @@ void get_matrix_hl(Matrix32u &h, Matrix32u &l, const Matrix32u &m);
 
 void get_matrix_bit(Matrix32u &b, const Matrix32u &m, const uint32_t num);
 
+void get_msb(Matrix32u &r, const Matrix32u &bottom, emp::NetIO *io, int party);
+
 #endif

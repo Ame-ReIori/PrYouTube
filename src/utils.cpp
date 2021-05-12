@@ -123,3 +123,37 @@ void get_matrix_bit(Matrix32u &b, const Matrix32u &m, const uint32_t num) {
         }
     }
 }
+
+void get_msb(Matrix32u &c, const Matrix32u &bottom, emp::NetIO *io, int party) {
+    int row_num = bottom.rows();
+    int col_num = bottom.cols();
+    Matrix32u h, l, h_, l_;
+    c.resize(row_num, col_num);
+    h.resize(row_num, col_num);
+    l.resize(row_num, col_num);
+    h_.resize(row_num, col_num);
+    l_.resize(row_num, col_num);
+    
+    // because bottom is value after secret share
+    // so we do not need to reshare it
+
+    // get msb of bottom
+    if (party == emp::ALICE) {
+        get_matrix_hl(h, l, bottom);
+        io->send_data(l.data(), l.size() * 4);
+        io->recv_data(c.data(), c.size() * 4);
+        io->recv_data(h_.data(), h_.size() * 4);
+
+        c += (h + h_);
+        get_matrix_bit(c, c, 16);
+    } else {
+        get_matrix_hl(h, l, bottom);
+        io->recv_data(l_.data(), l_.size() * 4);
+
+        l += l_;
+        get_matrix_bit(c, l, 9); // get (l0 + l1) & 0x10000
+
+        io->send_data(c.data(), c.size() * 4);
+        io->send_data(h.data(), h.size() * 4);
+    }
+}
